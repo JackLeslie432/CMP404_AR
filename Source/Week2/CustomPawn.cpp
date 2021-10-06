@@ -30,6 +30,8 @@ void ACustomPawn::DisplayCameraInfo()
 	FVector camOri = camRot.Vector();
 
 	UKismetSystemLibrary::PrintString(this,FString::Printf(TEXT("Camera orientation: (%f, %f, %f)"), camOri.X, camOri.Y, camOri.Z), true, true, FLinearColor(0, 0.66, 1, 1), 5);
+
+	SpawnActor(camOri);
 }
 
 // Called when the game starts or when spawned
@@ -42,8 +44,6 @@ void ACustomPawn::BeginPlay()
 	UARBlueprintLibrary::StartARSession(config);
 
 	GetWorldTimerManager().SetTimer(cameraTicker, this, &ACustomPawn::DisplayCameraInfo, cameraNotifyLoopTime, true, 0.0f);
-
-	SpawnActor();
 }
 
 // Called every frame
@@ -60,12 +60,12 @@ void ACustomPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 }
 
-void ACustomPawn::SpawnActor()
+void ACustomPawn::SpawnActor(FVector dir)
 {
 	FActorSpawnParameters SpawnInfo;
 	
 	FRotator rot(0, 0, 0); 
-	FVector loc(300, 0, 0); 
-	ACustomActor* customActor = GetWorld()->SpawnActor<ACustomActor>(loc, rot, SpawnInfo);
+	FVector loc(300, 1, 1); 
+	ACustomActor* customActor = GetWorld()->SpawnActor<ACustomActor>(loc * dir, rot, SpawnInfo);
 }
 

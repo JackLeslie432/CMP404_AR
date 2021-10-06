@@ -13,7 +13,17 @@ ACustomActor::ACustomActor()
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMeshComponent->AttachToComponent(SceneComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'")); 
+
+	static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Game/HandheldARBP/Materials/M_BackgroundFade"));
+	if (FoundMaterial.Succeeded())
+	{
+		StoredMaterial = FoundMaterial.Object;
+	}
+	DynamicMaterialInst = UMaterialInstanceDynamic::Create(StoredMaterial, StaticMeshComponent);
+
+	StaticMeshComponent->SetMaterial(0, DynamicMaterialInst);
 
 	StaticMeshComponent->SetStaticMesh(MeshAsset.Object);
 	SetRootComponent(SceneComponent);
@@ -62,6 +72,8 @@ void ACustomActor::Tick(float DeltaTime)
 
 void ACustomActor::PostInitializeComponents()
 {
+	Super::PostInitializeComponents();
+
 	startPos = GetActorLocation();
 }
 
