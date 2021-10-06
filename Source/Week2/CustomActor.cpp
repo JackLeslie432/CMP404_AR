@@ -12,10 +12,10 @@ ACustomActor::ACustomActor()
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));	
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'")); 
-	StaticMeshComponent->SetStaticMesh(MeshAsset.Object);
-
 	StaticMeshComponent->AttachToComponent(SceneComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'")); 
+
+	StaticMeshComponent->SetStaticMesh(MeshAsset.Object);
 	SetRootComponent(SceneComponent);
 }
 
@@ -33,15 +33,35 @@ void ACustomActor::Tick(float DeltaTime)
 
 	time += DeltaTime;
 
+	FMatrix m_init;
+
+	m_init = FMatrix::Identity; 
+	m_init.M[3][0] = startPos.X; 
+	m_init.M[3][1] = startPos.Y;
+	m_init.M[3][2] = startPos.Z;
+
 	FVector pos = GetActorLocation();
-	
+
 	float scale = 2 / (3 - cos(2 * time)); 
 	float x = scale * cos(time); 
 	float y = scale * sin(2 * time) / 2;
 
-	pos.X += x;
-	pos.Y += y;	
+	pos.X = x;
+	pos.Y = y;
 
-	SetActorLocation(pos);
+	FMatrix m_moving = FMatrix::Identity;
+
+	m_moving.M[3][0] = pos.X;// this is the calculated X from the previous lab
+	m_moving.M[3][1] = pos.Y;
+	m_moving.M[3][2] = pos.Z;
+
+	FMatrix m_final = m_moving * m_init;
+
+	SetActorTransform(FTransform(m_final));
+}
+
+void ACustomActor::PostInitializeComponents()
+{
+	startPos = GetActorLocation();
 }
 
