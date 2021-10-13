@@ -22,7 +22,7 @@ ACustomActor::ACustomActor()
 		StoredMaterial = FoundMaterial.Object;
 	}
 	DynamicMaterialInst = UMaterialInstanceDynamic::Create(StoredMaterial, StaticMeshComponent);
-
+	
 	StaticMeshComponent->SetMaterial(0, DynamicMaterialInst);
 
 	StaticMeshComponent->SetStaticMesh(MeshAsset.Object);
@@ -56,14 +56,14 @@ void ACustomActor::Tick(float DeltaTime)
 	float x = scale * cos(time); 
 	float y = scale * sin(2 * time) / 2;
 
-	pos.X = x;
-	pos.Y = y;
+	pos.X = y*100;
+	pos.Y = x*100;
 
 	FMatrix m_moving = FMatrix::Identity;
 
-	m_moving.M[3][0] = pos.X;// this is the calculated X from the previous lab
-	m_moving.M[3][1] = pos.Y;
-	m_moving.M[3][2] = pos.Z;
+	m_moving.M[3][0] = 0;// this is the calculated X from the previous lab
+	m_moving.M[3][1] = pos.X;
+	m_moving.M[3][2] = pos.Y;
 
 	FMatrix m_final = m_moving * m_init;
 

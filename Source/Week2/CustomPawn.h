@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "CustomActor.h"
+#include "SphereActor.h"
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
-#include"TimerManager.h"
-#include"Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "TimerManager.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "CustomPawn.generated.h"
 
 UCLASS()
@@ -30,9 +32,14 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	bool WorldHitTest(FVector2D screenPos, FHitResult* hitResult);
 
 	FTimerHandle cameraTicker; 
 	float cameraNotifyLoopTime;
+
+	bool cube = false;
+
+	TArray<ACustomActor*> spawned;
 
 public:	
 	// Called every frame
@@ -41,5 +48,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void SpawnActor(FVector dir);
+	virtual void OnScreenTouch(const ETouchIndex::Type fingerIndex, const FVector screenPos);
 
 };

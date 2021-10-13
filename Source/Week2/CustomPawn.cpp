@@ -46,11 +46,41 @@ void ACustomPawn::BeginPlay()
 	GetWorldTimerManager().SetTimer(cameraTicker, this, &ACustomPawn::DisplayCameraInfo, cameraNotifyLoopTime, true, 0.0f);
 }
 
+bool ACustomPawn::WorldHitTest(FVector2D screenPos, FHitResult* hitResult)
+{
+	APlayerController* playerController = UGameplayStatics::GetPlayerController(this, 0);
+
+	FVector worldPos,worldDir;
+	bool deproctionSuccess = UGameplayStatics::DeprojectScreenToWorld(playerController, screenPos, worldPos, worldDir);
+	
+	FVector traceVector = worldDir * 1000.f;
+	traceVector = worldPos + traceVector;
+
+	bool traceSuccess = GetWorld()->LineTraceSingleByChannel(*hitResult, worldPos, traceVector, ECollisionChannel::ECC_WorldDynamic);
+
+	return traceSuccess;
+}
+
 // Called every frame
 void ACustomPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	for (int i = 0; i < spawned.Num();i++)
+	{
+		float dist = GetActorLocation().Dist(GetActorLocation(), spawned[i]->GetActorLocation());
+		
+		//UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Dist: (%f)"), dist), true, true, FLinearColor(0, 0.66, 1, 1), 5);
+
+		if (dist < 300)
+		{
+			spawned[i]->DynamicMaterialInst->SetVectorParameterValue(FName("CustomColor"), FLinearColor(1, 0, 0));
+		}
+		else
+		{
+			spawned[i]->DynamicMaterialInst->SetVectorParameterValue(FName("CustomColor"), FLinearColor(0, 1, 0));
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -58,14 +88,44 @@ void ACustomPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindTouch(IE_Pressed, this, &ACustomPawn::OnScreenTouch);
 }
 
 void ACustomPawn::SpawnActor(FVector dir)
 {
 	FActorSpawnParameters SpawnInfo;
 	
-	FRotator rot(0, 0, 0); 
-	FVector loc(300, 1, 1); 
-	ACustomActor* customActor = GetWorld()->SpawnActor<ACustomActor>(loc * dir, rot, SpawnInfo);
+	FRotator rot(0, 0, 0);
+	rot = FRotator(dir.Normalize());
+	FVector loc(200, 200, 200); 
+
+	ACustomActor* customActor;
+
+	if (cube)
+	{
+		customActor = GetWorld()->SpawnActor<ACustomActor>(loc * dir.Normalize(), rot, SpawnInfo);
+	}
+	else
+	{
+		customActor = GetWorld()->SpawnActor<ASphereActor>(loc * dir.Normalize(), rot, SpawnInfo);		
+	}
+
+	spawned.Add(customActor);
+	cube = !cube;
+}
+
+void ACustomPawn::OnScreenTouch(const ETouchIndex::Type fingerIndex, const FVector screenPos)
+{
+	FHitResult hitResult;
+
+	if (WorldHitTest(FVector2D(screenPos), &hitResult))
+	{
+		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Touched "))+hitResult.Actor->GetName(), true, true, FLinearColor(0, 0.66, 1, 1), 5);
+		
+	}
+	else
+	{
+		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Missed")), true, true, FLinearColor(0, 0.66, 1, 1), 5);
+	}
 }
 
