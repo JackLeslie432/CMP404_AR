@@ -91,6 +91,9 @@ void ACustomPawn::Tick(float DeltaTime)
 
 	auto trackedImages = UARBlueprintLibrary::GetAllTrackedImages();
 
+	goghOnScreen = false;
+	earthOnScreen = false;
+
 	for(int i = 0; i <trackedImages.Num(); i++)
 	{
 		if (trackedImages[i]->GetDetectedImage())
@@ -98,6 +101,7 @@ void ACustomPawn::Tick(float DeltaTime)
 			if (trackedImages[i]->GetDetectedImage()->GetFriendlyName().Equals("gogh"))
 			{
 				auto Tf = trackedImages[i]->GetLocalToTrackingTransform();
+				goghOnScreen = trackedImages[i]->IsTracked();
 
 				if (!goghFound)
 				{
@@ -113,7 +117,7 @@ void ACustomPawn::Tick(float DeltaTime)
 					GoghCube = GetWorld()->SpawnActor<ACustomActor>(ACustomActor::StaticClass(), Tf, SpawnInfo);
 					GoghCube->SetActorLocation(imageLoc);
 
-					goghFound = true;
+					goghFound = true;					
 				}
 				else
 				{
@@ -123,7 +127,7 @@ void ACustomPawn::Tick(float DeltaTime)
 			else if (trackedImages[i]->GetDetectedImage()->GetFriendlyName().Equals("earth"))
 			{
 				auto Tf = trackedImages[i]->GetLocalToTrackingTransform();
-
+				earthOnScreen = trackedImages[i]->IsTracked();
 				if (!earthFound)
 				{
 					FActorSpawnParameters SpawnInfo;
@@ -147,6 +151,18 @@ void ACustomPawn::Tick(float DeltaTime)
 			}
 
 		}
+	}
+
+	if (goghOnScreen && earthOnScreen)
+	{
+		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Destroyed Both")), true, true, FLinearColor(0, 0.66, 1, 1), 5);
+
+		//earthSphere->Destroy();
+		//GoghCube->Destroy();
+
+		earthFound = false;
+		goghFound = false;
+
 	}
 }
 

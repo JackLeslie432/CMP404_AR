@@ -42,6 +42,9 @@ protected:
 	bool goghFound = false;
 	bool earthFound = false;
 
+	bool goghOnScreen;
+	bool earthOnScreen;
+
 	ACustomActor* GoghCube;
 	ASphereActor* earthSphere;
 
