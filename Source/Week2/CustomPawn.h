@@ -8,6 +8,7 @@
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
 #include "TimerManager.h"
+#include "ARSessionConfig.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
 #include "CustomPawn.generated.h"
@@ -38,8 +39,14 @@ protected:
 	float cameraNotifyLoopTime;
 
 	bool cube = false;
+	bool goghFound = false;
+	bool earthFound = false;
+
+	ACustomActor* GoghCube;
+	ASphereActor* earthSphere;
 
 	TArray<ACustomActor*> spawned;
+	UARSessionConfig* ARconfig;
 
 public:	
 	// Called every frame
@@ -49,5 +56,4 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void SpawnActor(FVector dir);
 	virtual void OnScreenTouch(const ETouchIndex::Type fingerIndex, const FVector screenPos);
-
 };

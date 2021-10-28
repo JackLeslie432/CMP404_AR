@@ -1,6 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CustomActor.h"
 
 // Sets default values
@@ -50,24 +48,24 @@ void ACustomActor::Tick(float DeltaTime)
 	m_init.M[3][1] = startPos.Y;
 	m_init.M[3][2] = startPos.Z;
 
-	FVector pos = GetActorLocation();
+	//FVector pos = GetActorLocation();
 
 	float scale = 2 / (3 - cos(2 * time)); 
 	float x = scale * cos(time); 
 	float y = scale * sin(2 * time) / 2;
 
-	pos.X = y*100;
-	pos.Y = x*100;
+	//pos.X = y*100;
+	//pos.Y = x*100;
 
 	FMatrix m_moving = FMatrix::Identity;
 
-	m_moving.M[3][0] = 0;// this is the calculated X from the previous lab
-	m_moving.M[3][1] = pos.X;
-	m_moving.M[3][2] = pos.Y;
+	//m_moving.M[3][0] = 0;// this is the calculated X from the previous lab
+	//m_moving.M[3][1] = y * 100;
+	//m_moving.M[3][2] = x * 100;
 
-	FMatrix m_final = m_moving * m_init;
+	FMatrix m_final = m_moving * m_init ;
 
-	SetActorTransform(FTransform(m_final));
+	//SetActorTransform(FTransform(m_final));
 }
 
 void ACustomActor::PostInitializeComponents()

@@ -15,7 +15,12 @@ ACustomPawn::ACustomPawn()
 	RootComponent = SceneComponent;
 
 	CamComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
-	CamComponent->SetupAttachment(RootComponent);
+	//CamComponent->SetupAttachment(RootComponent);
+
+	static ConstructorHelpers::FObjectFinder<UARSessionConfig> 
+	ConfigAsset(TEXT("/Game/Images/CustomSessionConfig"));
+
+	ARconfig = ConfigAsset.Object;
 
 	cameraNotifyLoopTime = 4.0f;
 }
@@ -31,7 +36,7 @@ void ACustomPawn::DisplayCameraInfo()
 
 	UKismetSystemLibrary::PrintString(this,FString::Printf(TEXT("Camera orientation: (%f, %f, %f)"), camOri.X, camOri.Y, camOri.Z), true, true, FLinearColor(0, 0.66, 1, 1), 5);
 
-	SpawnActor(camOri);
+	//SpawnActor(camOri);
 }
 
 // Called when the game starts or when spawned
@@ -40,10 +45,12 @@ void ACustomPawn::BeginPlay()
 	Super::BeginPlay();
 	UKismetSystemLibrary::PrintString(this, FString(TEXT("Hello world")), true, true, FLinearColor(0, 0.66, 1, 1), 5);
 
-	UARSessionConfig* config = NewObject<UARSessionConfig>();
-	UARBlueprintLibrary::StartARSession(config);
+	//UARSessionConfig* config = NewObject<UARSessionConfig>();
+	UARBlueprintLibrary::StartARSession(ARconfig);
 
 	GetWorldTimerManager().SetTimer(cameraTicker, this, &ACustomPawn::DisplayCameraInfo, cameraNotifyLoopTime, true, 0.0f);
+
+
 }
 
 bool ACustomPawn::WorldHitTest(FVector2D screenPos, FHitResult* hitResult)
@@ -79,6 +86,66 @@ void ACustomPawn::Tick(float DeltaTime)
 		else
 		{
 			spawned[i]->DynamicMaterialInst->SetVectorParameterValue(FName("CustomColor"), FLinearColor(0, 1, 0));
+		}
+	}
+
+	auto trackedImages = UARBlueprintLibrary::GetAllTrackedImages();
+
+	for(int i = 0; i <trackedImages.Num(); i++)
+	{
+		if (trackedImages[i]->GetDetectedImage())
+		{
+			if (trackedImages[i]->GetDetectedImage()->GetFriendlyName().Equals("gogh"))
+			{
+				auto Tf = trackedImages[i]->GetLocalToTrackingTransform();
+
+				if (!goghFound)
+				{
+					FActorSpawnParameters SpawnInfo;
+
+					FRotator rot(0, 0, 0);
+					FVector start(0, 0, 0);
+
+					Tf.SetScale3D(FVector(0.1, 0.1, 0.1));
+
+					auto imageLoc = Tf.GetLocation();
+
+					GoghCube = GetWorld()->SpawnActor<ACustomActor>(ACustomActor::StaticClass(), Tf, SpawnInfo);
+					GoghCube->SetActorLocation(imageLoc);
+
+					goghFound = true;
+				}
+				else
+				{
+					GoghCube->SetActorLocation(Tf.GetLocation());
+				}
+			}
+			else if (trackedImages[i]->GetDetectedImage()->GetFriendlyName().Equals("earth"))
+			{
+				auto Tf = trackedImages[i]->GetLocalToTrackingTransform();
+
+				if (!earthFound)
+				{
+					FActorSpawnParameters SpawnInfo;
+
+					FRotator rot(0, 0, 0);
+					FVector start(0, 0, 0);
+
+					Tf.SetScale3D(FVector(0.1, 0.1, 0.1));
+
+					auto imageLoc = Tf.GetLocation();
+
+					earthSphere = GetWorld()->SpawnActor<ASphereActor>(ASphereActor::StaticClass(), Tf, SpawnInfo);
+					earthSphere->SetActorLocation(imageLoc);
+
+					earthFound = true;
+				}
+				else
+				{
+					//earthSphere->SetActorLocation(Tf.GetLocation());
+				}
+			}
+
 		}
 	}
 }
