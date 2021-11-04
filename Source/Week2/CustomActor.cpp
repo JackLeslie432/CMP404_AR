@@ -1,5 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "CustomActor.h"
+#include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+
 
 // Sets default values
 ACustomActor::ACustomActor()
@@ -40,6 +42,26 @@ void ACustomActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	time += DeltaTime;
+
+	if (bMove)
+	{		
+		FVector lerp = UKismetMathLibrary::VLerp(startPos, endPos, lerpTimer);
+
+		SetActorLocation(lerp);
+		
+		if (time > 0.01)
+		{
+			time = 0;
+
+			if (lerpTimer > 1)
+				lerpAmount *= -1;
+			else if (lerpTimer < 0)
+				lerpAmount *= -1;
+
+			lerpTimer += lerpAmount;
+		}
+	}
+
 
 	FMatrix m_init;
 

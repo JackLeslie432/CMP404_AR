@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CustomActor.h"
 #include "SphereActor.h"
+#include "PlaneActor.h"
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
 #include "TimerManager.h"
@@ -45,8 +45,13 @@ protected:
 	bool goghOnScreen;
 	bool earthOnScreen;
 
+	bool bSelected;
+
 	ACustomActor* GoghCube;
+	ACustomActor* floatyCube;
 	ASphereActor* earthSphere;
+
+	APlaneActor* groundPlane;
 
 	TArray<ACustomActor*> spawned;
 	UARSessionConfig* ARconfig;
@@ -59,4 +64,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void SpawnActor(FVector dir);
 	virtual void OnScreenTouch(const ETouchIndex::Type fingerIndex, const FVector screenPos);
+
+	virtual void CheckPlane();
 };

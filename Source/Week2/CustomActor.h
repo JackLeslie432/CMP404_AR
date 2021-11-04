@@ -31,9 +31,20 @@ protected:
 	virtual void PostInitializeComponents() override;
 
 	float time;
+	float lerpAmount = 0.01f;
+	float lerpTimer = 0.f;
 	FVector startPos;
+	FVector endPos;
+
+	bool bMove = false;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetMove(bool inMove) { bMove = inMove; };
+	void SetEndPos(FVector inEnd) {endPos = inEnd; };
+
+	FVector GetStartPos() { return startPos; };
+
 };
