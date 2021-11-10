@@ -46,7 +46,7 @@ void ACustomPawn::BeginPlay()
 	UKismetSystemLibrary::PrintString(this, FString(TEXT("Hello world")), true, true, FLinearColor(0, 0.66, 1, 1), 5);
 
 	//UARSessionConfig* config = NewObject<UARSessionConfig>();
-	UARBlueprintLibrary::StartARSession(ARconfig);
+	//UARBlueprintLibrary::StartARSession(ARconfig);
 
 	GetWorldTimerManager().SetTimer(cameraTicker, this, &ACustomPawn::DisplayCameraInfo, cameraNotifyLoopTime, true, 0.0f);
 	GetWorldTimerManager().SetTimer(cameraTicker, this, &ACustomPawn::CheckPlane, 1, true, 0.0f);

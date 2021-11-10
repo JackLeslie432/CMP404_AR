@@ -12,7 +12,7 @@ public class Week2 : ModuleRules
 
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AugmentedReality" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "AugmentedReality", "ProceduralMeshComponent" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
