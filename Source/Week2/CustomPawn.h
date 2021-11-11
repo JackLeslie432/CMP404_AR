@@ -5,12 +5,18 @@
 #include "CoreMinimal.h"
 #include "SphereActor.h"
 #include "PlaneActor.h"
+#include "Andy.h"
+
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
+
 #include "TimerManager.h"
+
 #include "ARSessionConfig.h"
+
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/Engine/Classes/Kismet/KismetMathLibrary.h"
+
 #include "CustomPawn.generated.h"
 
 UCLASS()
@@ -29,7 +35,7 @@ public:
 		UCameraComponent* CamComponent;
 
 	virtual void DisplayCameraInfo();
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,7 +43,7 @@ protected:
 
 	FTimerHandle cameraTicker; 
 	float cameraNotifyLoopTime;
-
+	
 	bool cube = false;
 	bool goghFound = false;
 	bool earthFound = false;
@@ -56,6 +62,10 @@ protected:
 	TArray<ACustomActor*> spawned;
 	UARSessionConfig* ARconfig;
 
+	TArray<AAndy*> AndyActors;
+
+	int MaxAndySpawned;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -66,4 +76,6 @@ public:
 	virtual void OnScreenTouch(const ETouchIndex::Type fingerIndex, const FVector screenPos);
 
 	virtual void CheckPlane();
+
+	virtual void SpawnAndy(const FVector screenPos);
 };

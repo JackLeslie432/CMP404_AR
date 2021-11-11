@@ -4,6 +4,7 @@
 #include "CustomPawn.h"
 #include "Runtime/Engine/Classes/Kismet/KismetSystemLibrary.h"
 #include "ARBlueprintLibrary.h"
+#include "ARPin.h"
 
 // Sets default values
 ACustomPawn::ACustomPawn()
@@ -45,11 +46,13 @@ void ACustomPawn::BeginPlay()
 	Super::BeginPlay();
 	UKismetSystemLibrary::PrintString(this, FString(TEXT("Hello world")), true, true, FLinearColor(0, 0.66, 1, 1), 5);
 
-	//UARSessionConfig* config = NewObject<UARSessionConfig>();
-	//UARBlueprintLibrary::StartARSession(ARconfig);
+	UARSessionConfig* config = NewObject<UARSessionConfig>();
+	UARBlueprintLibrary::StartARSession(ARconfig);
+
+	SetupPlayerInputComponent(CreatePlayerInputComponent());
 
 	GetWorldTimerManager().SetTimer(cameraTicker, this, &ACustomPawn::DisplayCameraInfo, cameraNotifyLoopTime, true, 0.0f);
-	GetWorldTimerManager().SetTimer(cameraTicker, this, &ACustomPawn::CheckPlane, 1, true, 0.0f);
+	//GetWorldTimerManager().SetTimer(cameraTicker, this, &ACustomPawn::CheckPlane, 1, true, 0.0f);
 }
 
 bool ACustomPawn::WorldHitTest(FVector2D screenPos, FHitResult* hitResult)
@@ -221,6 +224,8 @@ void ACustomPawn::OnScreenTouch(const ETouchIndex::Type fingerIndex, const FVect
 {
 	FHitResult hitResult;
 
+	SpawnAndy(screenPos);
+
 	if (WorldHitTest(FVector2D(screenPos), &hitResult))
 	{
 		UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Touched "))+hitResult.Actor->GetName(), true, true, FLinearColor(0, 0.66, 1, 1), 5);
@@ -249,6 +254,10 @@ void ACustomPawn::OnScreenTouch(const ETouchIndex::Type fingerIndex, const FVect
 				spawned.Add(GetWorld()->SpawnActor<ACustomActor>(ACustomActor::StaticClass(),spawnPos ,rot, SpawnInfo));
 				spawned[spawned.Num() - 1]->SetActorScale3D(FVector(0.1f, 0.1f, 0.1f));
 			}
+		}
+		else if (hitResult.Actor->GetName().Contains("Andy"))
+		{
+
 		}
 		else
 		{
@@ -310,5 +319,39 @@ void ACustomPawn::CheckPlane()
 			}
 		}
 	}
+}
+
+void ACustomPawn::SpawnAndy(const FVector screenPos)
+{
+	auto hitResult = UARBlueprintLibrary::LineTraceTrackedObjects(FVector2D(screenPos));
+
+	if (hitResult.Num() > 0)
+	{
+		// Create pin for spawning
+		auto pin = UARBlueprintLibrary::PinComponent(nullptr, hitResult[0].GetLocalToTrackingTransform(), hitResult[0].GetTrackedGeometry());
+
+		if (IsValid(pin))
+		{
+			if (AndyActors.Num() > MaxAndySpawned)
+			{
+				// take from end of array
+
+			}
+			else
+			{
+				UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Spawing Andy") ), true, true, FLinearColor(0, 0.66, 1, 1), 5);
+
+				// Spawn a new one
+				const FTransform TF = pin->GetLocalToTrackingTransform();
+
+				auto andy = GetWorld()->SpawnActor(AndyActor,&TF);
+								
+				AndyActors.Push(andy);
+			}
+		}		
+	}
+
+	
+
 }
 
