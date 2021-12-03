@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "SphereActor.h"
 #include "PlaneActor.h"
-#include "Andy.h"
+//#include "Andy.h"
 
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
@@ -34,6 +34,9 @@ public:
 	UPROPERTY(Category = "myCategory", VisibleAnywhere, BlueprintReadWrite)
 		UCameraComponent* CamComponent;
 
+	/*UPROPERTY(Category = "myCategory", VisibleAnywhere, BlueprintReadWrite)
+		AAndy* andy;*/
+
 	virtual void DisplayCameraInfo();
 	
 protected:
@@ -57,12 +60,15 @@ protected:
 	ACustomActor* floatyCube;
 	ASphereActor* earthSphere;
 
+	
+
 	APlaneActor* groundPlane;
 
 	TArray<ACustomActor*> spawned;
 	UARSessionConfig* ARconfig;
 
-	TArray<AAndy*> AndyActors;
+	TArray<AActor*> AndyActors;
+
 
 	int MaxAndySpawned;
 

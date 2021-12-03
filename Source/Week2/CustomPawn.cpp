@@ -339,14 +339,16 @@ void ACustomPawn::SpawnAndy(const FVector screenPos)
 			}
 			else
 			{
-				UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Spawing Andy") ), true, true, FLinearColor(0, 0.66, 1, 1), 5);
+				UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("Spawning Andy") ), true, true, FLinearColor(0, 0.66, 1, 1), 5);
 
 				// Spawn a new one
 				const FTransform TF = pin->GetLocalToTrackingTransform();
 
-				auto andy = GetWorld()->SpawnActor(AndyActor,&TF);
+				FActorSpawnParameters spawnInfo;
+
+				//andy = GetWorld()->SpawnActor<AAndy>(AAndy::StaticClass(),TF, spawnInfo);
 								
-				AndyActors.Push(andy);
+				//AndyActors.Push(andy);
 			}
 		}		
 	}
